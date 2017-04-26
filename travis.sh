@@ -19,7 +19,7 @@ if [ "$TRAVIS_TAG" != "" ]; then
     cd build/deploy
     git checkout ${TARGET_BRANCH} || git checkout --orphan ${TARGET_BRANCH}
     git config user.name "Travis CI"
-    git config user.email "$COMMIT_AUTHOR_EMAIL"
+    git config user.email "$GITHUB_USER_NAME@users.noreply.github.com"
 
     echo "Adding release to mvn-repo..."
     cp -rv ../repo/* .
