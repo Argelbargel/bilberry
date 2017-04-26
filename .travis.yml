@@ -2,8 +2,29 @@ language: java
 
 jdk:
   - oraclejdk8
-  - oraclejdk7
-  - openjdk7
+
+script: ./travis.sh
+
+cache:
+  directories:
+  - $HOME/.gradle/caches
+  - $HOME/.gradle/native
+  - $HOME/.gradle/wrapper
 
 before_install:
   - chmod +x gradlew
+  - chmod +x travis.sh
+
+deploy:
+  provider: releases
+  api_key: "$GITHUB_API_TOKEN"
+  skip_cleanup: true
+  on:
+    tags: true
+  file:
+    - "build/repo/argelbargel/gradle/plugins/gradle-elastic-plugin/$TRAVIS_TAG/gradle-elastic-plugin-$TRAVIS_TAG.jar"
+    - "build/repo/argelbargel/gradle/plugins/gradle-elastic-plugin/$TRAVIS_TAG/gradle-elastic-plugin-$TRAVIS_TAG.jar.md5"
+    - "build/repo/argelbargel/gradle/plugins/gradle-elastic-plugin/$TRAVIS_TAG/gradle-elastic-plugin-$TRAVIS_TAG.jar.sha1"
+    - "build/repo/argelbargel/gradle/plugins/gradle-elastic-plugin/$TRAVIS_TAG/gradle-elastic-plugin-$TRAVIS_TAG.pom"
+    - "build/repo/argelbargel/gradle/plugins/gradle-elastic-plugin/$TRAVIS_TAG/gradle-elastic-plugin-$TRAVIS_TAG.pom.md5"
+    - "build/repo/argelbargel/gradle/plugins/gradle-elastic-plugin/$TRAVIS_TAG/gradle-elastic-plugin-$TRAVIS_TAG.pom.sha1"

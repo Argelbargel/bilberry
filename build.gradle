@@ -12,8 +12,10 @@ plugins {
   id "com.jfrog.bintray" version "1.6"
 }
 
-group = "de.gesellix"
-version = "0.0.12"
+group = "argelbargel.gradle.plugins"
+if (project.hasProperty('release') && project.getProperty('release') != '') {
+    version = project.getProperty('release')
+}
 
 String repoName = 'bilberry'
 
@@ -53,6 +55,12 @@ def pomConfig = {
 }
 
 publishing {
+    repositories {
+        maven {
+            url "$buildDir/repo"
+        }
+    }
+
   publications {
     plugin(MavenPublication) {
       from components.java
@@ -80,26 +88,28 @@ model {
   }
 }
 
-bintray {
-  user = System.env.BINTRAY_USER ?: project["bintray.user"]
-  key = System.env.BINTRAY_API_KEY ?: project["bintray.key"]
+if (project.hasProperty("bintray.enable")) {
+  bintray {
+    user = System.env.BINTRAY_USER ?: project["bintray.user"]
+    key = System.env.BINTRAY_API_KEY ?: project["bintray.key"]
 
-  publications = ['plugin']
+    publications = ['plugin']
 
-  publish = true
+    publish = true
 
-  pkg {
-    repo = 'gradle-plugins'
-    name = 'gradle-elastic-plugin'
-    websiteUrl = "https://github.com/gesellix/$repoName"
-    issueTrackerUrl = "https://github.com/gesellix/$repoName/issues"
-    vcsUrl = "https://github.com/gesellix/${repoName}.git"
-    licenses = ['Apache-2.0']
-    labels = ['gradle', 'plugin', 'elastic', 'ElasticSearch', repoName]
-    version {
-      name = project.version
+    pkg {
+      repo = 'gradle-plugins'
+      name = 'gradle-elastic-plugin'
+      websiteUrl = "https://github.com/gesellix/$repoName"
+      issueTrackerUrl = "https://github.com/gesellix/$repoName/issues"
+      vcsUrl = "https://github.com/gesellix/${repoName}.git"
+      licenses = ['Apache-2.0']
+      labels = ['gradle', 'plugin', 'elastic', 'ElasticSearch', repoName]
+      version {
+        name = project.version
+      }
     }
   }
-}
 
-bintrayUpload.dependsOn build
+  bintrayUpload.dependsOn build
+}

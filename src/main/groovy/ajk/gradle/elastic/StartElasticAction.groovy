@@ -38,6 +38,14 @@ class StartElasticAction {
     @Optional
     List<String> withPlugins = ["head plugin"]
 
+    @Input
+    @Optional
+    boolean deleteDataDir = true
+
+    @Input
+    @Optional
+    String packageUrl = null
+
     private Project project
 
     private AntBuilder ant
@@ -59,7 +67,8 @@ class StartElasticAction {
         }
 
         if (!elastic.installed) {
-            elastic.install(withPlugins)
+            String url = (packageUrl == null || packageUrl == "") ? elastic.getElasticPackageUrl() : packageUrl
+            elastic.install(url, withPlugins)
         }
 
         httpPort = httpPort ?: 9200
@@ -70,36 +79,37 @@ class StartElasticAction {
         println "${CYAN}* elastic:$NORMAL ElasticSearch data directory: $dataDir"
         println "${CYAN}* elastic:$NORMAL ElasticSearch logs directory: $logsDir"
 
-        ant.delete(failonerror: true, dir: dataDir)
+        if (deleteDataDir) {
+            ant.delete(failonerror: true, dir: dataDir)
+        }
+
         ant.delete(failonerror: true, dir: logsDir)
-        logsDir.mkdirs()
+
         dataDir.mkdirs()
+        logsDir.mkdirs()
 
         File esScript = new File("${elastic.home}/bin/elasticsearch${isFamily(FAMILY_WINDOWS) ? '.bat' : ''}")
-        def environment = [
-                "JAVA_HOME=${System.properties['java.home']}",
-                "ES_HOME=$elastic.home",
-                "ES_MAX_MEM=512m",
-                "ES_MIN_MEM=128m"
-        ]
-
         def command = [
                 esScript.absolutePath,
                 "-Des.http.port=$httpPort",
                 "-Des.transport.tcp.port=$transportPort",
                 "-Des.path.data=$dataDir",
                 "-Des.path.logs=$logsDir",
-                "-Des.discovery.zen.ping.multicast.enabled=false",
-                "-p${pidFile}"
+                "-Des.discovery.zen.ping.multicast.enabled=false"
         ]
 
-        if (isFamily(FAMILY_WINDOWS)) {
-            environment += [
-                    "TEMP=${System.env['TEMP']}"
+        if (!isFamily(FAMILY_WINDOWS)) {
+            command += [
+                    "-p${pidFile}"
             ]
         }
 
-        command.execute(environment, elastic.home)
+        command.execute([
+                "JAVA_HOME=${System.properties['java.home']}",
+                "ES_HOME=$elastic.home",
+                "ES_MAX_MEM=512m",
+                "ES_MIN_MEM=128m"
+        ], elastic.home)
 
         println "${CYAN}* elastic:$NORMAL waiting for ElasticSearch to start"
         ant.waitfor(maxwait: 2, maxwaitunit: "minute", timeoutproperty: "elasticTimeout") {

@@ -1,8 +1,7 @@
-# gradle-elastic-plugin
-an ElasticSearch gradle plugin for integration tests with ElasticSearch
+# gradle-elastic-plugin [![Build Status](https://travis-ci.org/Argelbargel/sonarqube-multiproject-gradle-plugin.svg?branch=master)](https://travis-ci.org/Argelbargel/bilberry)
 
-[ ![Build Status](https://travis-ci.org/amirkibbar/bilberry.svg?branch=master) ](https://travis-ci.org/amirkibbar/bilberry)
-[ ![Download](https://api.bintray.com/packages/amirk/maven/gradle-elastic-plugin/images/download.svg) ](https://bintray.com/amirk/maven/gradle-elastic-plugin/_latestVersion)
+Fork of [gsellix/bilberry](https://github.com/gesellix/bilberry), an ElasticSearch gradle plugin for integration tests with ElasticSearch
+
 
 # Using
 
@@ -11,7 +10,7 @@ Plugin setup with gradle >= 2.1:
 ```gradle
 
     plugins {
-        id "ajk.gradle.elastic" version "0.0.10"
+        id "argelbargel.gradle.plugins.elastic-plugin" version "0.0.13"
     }
 ```
 
@@ -25,7 +24,7 @@ Plugin setup with gradle < 2.1:
             maven { url "http://dl.bintray.com/amirk/maven" }
         }
         dependencies {
-            classpath("ajk.gradle.elastic:gradle-elastic-plugin:0.0.10")
+            classpath("argelbargel.gradle.plugins:gradle-elastic-plugin:0.0.13")
         }
     }
 
