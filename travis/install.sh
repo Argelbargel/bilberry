@@ -7,9 +7,9 @@ if [ "$TRAVIS_TAG" != "" ]; then
     GRADLE_TASKS="$GRADLE_TASKS publish"
 fi
 
-../gradlew ${GRADLE_TASKS} -Prelease=${TRAVIS_TAG} --no-daemon
+./gradlew ${GRADLE_TASKS} -Prelease=${TRAVIS_TAG} --no-daemon
 
 if [ "$TRAVIS_TAG" != "" ]; then
-    ./publish.sh
+    ./travis/publish.sh
 fi
 
