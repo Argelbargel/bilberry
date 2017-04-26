@@ -4,9 +4,10 @@ jdk:
   - oraclejdk8
 
 install: true
-script: ./travis.sh
+script: ./travis/install.sh
 env:
   global:
+    - PUBLISH_BRANCH="mvn-repo"
     - DEPLOY_KEY_ID="6f7a488aaf79"
 
 cache:
