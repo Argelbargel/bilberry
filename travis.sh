@@ -24,12 +24,12 @@ if [ "$TRAVIS_TAG" != "" ]; then
     echo "Adding release to mvn-repo..."
     cp -rv ../repo/* .
 
-    echo "Changes for release..."
+    echo "Changes to release..."
     git status -s
 
     if [ -n "$(git status -s)" ]; then
         git add .
-        git commit -m "release : $TRAVIS_TAG"
+        git commit -m "release: $TRAVIS_TAG"
         git push ${TARGET_REPO} ${TARGET_BRANCH}
     fi
 fi
