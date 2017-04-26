@@ -16,13 +16,11 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
     git clone ${REPO} build/deploy
 
     cd build/deploy
-    git remote remove origin
-    git remote add -t ${TARGET_BRANCH} origin ${ORIGIN}
+
+    git checkout ${TARGET_BRANCH} || (git checkout --orphan ${TARGET_BRANCH} && git rm -r -f .)
     git config user.name "Travis CI"
     git config user.email "$GITHUB_USER_NAME@users.noreply.github.com"
     git config push.default simple
-
-    git checkout ${TARGET_BRANCH} || (git checkout --orphan ${TARGET_BRANCH} && git rm -r -f .)
 
     echo "Adding release to mvn-repo..."
     cp -r ../repo/* .
@@ -44,7 +42,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
         eval `ssh-agent -s`
         ssh-add deploy_key
 
-        git push --set-upstream origin ${TARGET_BRANCH}
+        git push ${ORIGIN} ${TARGET_BRANCH}
     fi
 #fi
 
