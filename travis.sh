@@ -4,7 +4,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
 
 ./gradlew check -Prelease=${TRAVIS_TAG}
 
-#if [ "$TRAVIS_TAG" != "" ]; then
+if [ "$TRAVIS_TAG" != "" ]; then
     echo "Publishing release $TRAVIS_TAG..."
     
     ./gradlew publish -Prelease=${TRAVIS_TAG}
@@ -17,16 +17,12 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
 
     cd build/deploy
 
-    git checkout ${TARGET_BRANCH} || (git checkout --orphan ${TARGET_BRANCH} && git rm -r -f .)
+    git checkout ${TARGET_BRANCH} || (git checkout --orphan ${TARGET_BRANCH} && git rm -r -q -f .)
     git config user.name "Travis CI"
     git config user.email "$GITHUB_USER_NAME@users.noreply.github.com"
     git config push.default simple
 
-    echo "Adding release to mvn-repo..."
     cp -r ../repo/* .
-
-    echo "Changes to release:"
-    git status -s
 
     if [ -n "$(git status -s)" ]; then
         git add .
@@ -44,5 +40,5 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
 
         git push ${ORIGIN} ${TARGET_BRANCH}
     fi
-#fi
+fi
 
