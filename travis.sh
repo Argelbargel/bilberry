@@ -5,7 +5,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
 ./gradlew assemble -Prelease=${TRAVIS_TAG}
 ./gradlew check -Prelease=${TRAVIS_TAG}
 
-if [ "$TRAVIS_TAG" != "" ]; then
+#if [ "$TRAVIS_TAG" != "" ]; then
     echo "Publishing release $TRAVIS_TAG..."
     
     ./gradlew publish -Prelease=${TRAVIS_TAG}
@@ -14,9 +14,10 @@ if [ "$TRAVIS_TAG" != "" ]; then
     ORIGIN=${REPO/https:\/\/github.com/https://${GITHUB_USER_NAME}:${GITHUB_API_TOKEN}@github.com}
     TARGET_BRANCH="mvn-repo"
 
-    git clone ${REPO} /tmp/deploy --no-checkout
+    git clone ${REPO} build/deploy --no-checkout
 
-    cd /tmp/deploy
+    cd build/deploy
+    pwd
     git remote remove origin
     git remote add -t ${TARGET_BRANCH} origin ${ORIGIN}
     git config user.name "Travis CI"
@@ -26,12 +27,15 @@ if [ "$TRAVIS_TAG" != "" ]; then
     git checkout ${TARGET_BRANCH} || git checkout --orphan ${TARGET_BRANCH}
 
     echo "Adding release to mvn-repo..."
-    cp -r $HOME/build/repo/* .
+    cp -rv ../repo/* .
+
+    echo "Changes to release:"
+    git status -s
 
     if [ -n "$(git status -s)" ]; then
         git add .
         git commit -m "release: $TRAVIS_TAG"
-        git push -q
+        git push --set-upstream origin ${TARGET_BRANCH} -q
     fi
-fi
+#fi
 
