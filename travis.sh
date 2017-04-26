@@ -13,7 +13,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
     ORIGIN=${REPO/https:\/\/github.com\//git@github.com:}
     TARGET_BRANCH="mvn-repo"
 
-    git clone ${REPO} build/deploy --no-checkout
+    git clone ${REPO} build/deploy
 
     cd build/deploy
     git remote remove origin
@@ -39,7 +39,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
         ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
         ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
         openssl aes-256-cbc -K ${ENCRYPTED_KEY} -iv ${ENCRYPTED_IV} -in ../../deploy_key.enc -out deploy_key -d
-exit 0
+
         chmod 600 deploy_key
         eval `ssh-agent -s`
         ssh-add deploy_key
