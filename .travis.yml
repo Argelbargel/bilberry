@@ -4,6 +4,9 @@ jdk:
   - oraclejdk8
 
 script: ./travis.sh
+env:
+  global:
+    DEPLOY_KEY_ID="0a6446eb3ae3"
 
 cache:
   directories:

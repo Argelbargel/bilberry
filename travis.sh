@@ -10,7 +10,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
     ./gradlew publish -Prelease=${TRAVIS_TAG}
 
     REPO=`git config remote.origin.url`
-    ORIGIN=${REPO/https:\/\/github.com/https://${GITHUB_USER_NAME}:${GITHUB_API_TOKEN}@github.com}
+    ORIGIN=${REPO/https:\/\/github.com/git@github.com}
     TARGET_BRANCH="mvn-repo"
 
     git clone ${REPO} build/deploy --no-checkout
@@ -33,7 +33,17 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
     if [ -n "$(git status -s)" ]; then
         git add .
         git commit -m "release: $TRAVIS_TAG"
-        git push --set-upstream origin ${TARGET_BRANCH} -q 2> /dev/null
+
+        ENCRYPTED_KEY_VAR="encrypted_${DEPLOY_KEY_ID}_key"
+        ENCRYPTED_IV_VAR="encrypted_${DEPLOY_KEY_ID}_iv"
+        ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
+        ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
+        openssl aes-256-cbc -K ${ENCRYPTED_KEY} -iv ${ENCRYPTED_IV} -in deploy_key.enc -out deploy_key -d
+        chmod 600 deploy_key
+        eval `ssh-agent -s`
+        ssh-add deploy_key
+
+        git push --set-upstream origin ${TARGET_BRANCH}
     fi
 #fi
 
