@@ -17,7 +17,6 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
     git clone ${REPO} build/deploy --no-checkout
 
     cd build/deploy
-    pwd
     git remote remove origin
     git remote add -t ${TARGET_BRANCH} origin ${ORIGIN}
     git config user.name "Travis CI"
@@ -27,7 +26,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
     git checkout ${TARGET_BRANCH} || (git checkout --orphan ${TARGET_BRANCH} && git rm -r -f .)
 
     echo "Adding release to mvn-repo..."
-    cp -rv ../repo/* .
+    cp -r ../repo/* .
 
     echo "Changes to release:"
     git status -s
@@ -35,7 +34,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
     if [ -n "$(git status -s)" ]; then
         git add .
         git commit -m "release: $TRAVIS_TAG"
-        git push --set-upstream origin ${TARGET_BRANCH} -q
+        git push --set-upstream origin ${TARGET_BRANCH} -q 2> /dev/null
     fi
 #fi
 
