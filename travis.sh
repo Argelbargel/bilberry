@@ -24,7 +24,7 @@ if [ "$TRAVIS_TAG" != "" ]; then
     git config push.default simple
 
     echo "Adding release to mvn-repo..."
-    cp -rv $HOME/repo/* .
+    cp -rv $HOME/build/repo/* .
 
     echo "Changes to release..."
     git status -s
