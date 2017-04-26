@@ -23,6 +23,7 @@ if [ "$TRAVIS_TAG" != "" ]; then
 
     echo "Adding release to mvn-repo..."
     cp -rv ../repo/* .
+    git diff --shortstat
 
     if [ -z `git diff --exit-code` ]; then
         echo "No changes to the output on this push; exiting."
