@@ -1,15 +1,6 @@
-buildscript {
-  repositories {
-    maven { url "https://plugins.gradle.org/m2/" }
-  }
-
-  dependencies {
-    classpath "com.gradle.publish:plugin-publish-plugin:0.9.1"
-  }
-}
-
 plugins {
-  id "com.jfrog.bintray" version "1.6"
+    id "com.jfrog.bintray" version "1.6"
+    id "com.gradle.plugin-publish" version "0.9.7"
 }
 
 group = "argelbargel.gradle.plugins"
@@ -17,41 +8,40 @@ if (project.hasProperty('release') && project.getProperty('release') != '') {
     version = project.getProperty('release')
 }
 
-String repoName = 'bilberry'
-
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 apply plugin: "com.gradle.plugin-publish"
 
+
 compileGroovy {
-  sourceCompatibility = '1.7'
-  targetCompatibility = '1.7'
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
 }
 
 repositories {
-  jcenter()
+    jcenter()
 }
 
 dependencies {
-  compile gradleApi()
-  compile localGroovy()
-  compile "de.undercouch:gradle-download-task:3.1.0"
-  compile "org.apache.httpcomponents:fluent-hc:4.5.2"
+    compile gradleApi()
+    compile localGroovy()
+    compile "de.undercouch:gradle-download-task:3.1.0"
+    compile "org.apache.httpcomponents:fluent-hc:4.5.2"
 }
 
 task sourcesJar(type: Jar) {
-  from sourceSets.main.allSource
-  classifier = 'sources'
+    from sourceSets.main.allSource
+    classifier = 'sources'
 }
 
 def pomConfig = {
-  licenses {
-    license {
-      name "The Apache Software License, Version 2.0"
-      url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-      distribution "repo"
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
     }
-  }
 }
 
 publishing {
@@ -61,55 +51,56 @@ publishing {
         }
     }
 
-  publications {
-    plugin(MavenPublication) {
-      from components.java
-      artifact sourcesJar
+    publications {
+        plugin(MavenPublication) {
+            from components.java
+            artifact sourcesJar
 
-      pom.withXml {
-        def root = asNode()
-        root.appendNode('description', 'a gradle plugin for starting and stopping ElasticSearch during integration tests')
-        root.children().last() + pomConfig
-      }
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'a gradle plugin for starting and stopping ElasticSearch during integration tests')
+                root.children().last() + pomConfig
+            }
+        }
     }
-  }
 }
 
 task install() {
-  dependsOn 'publishPluginPublicationToMavenLocal'
-  doFirst {
-    logger.lifecycle "installing $project.name version $version"
-  }
+    dependsOn 'publishPluginPublicationToMavenLocal'
+    doFirst {
+        logger.lifecycle "installing $project.name version $version"
+    }
 }
 
 model {
-  tasks.generatePomFileForPluginPublication {
-    destination = file("$buildDir/libs/${project.name}-${project.version}.pom")
-  }
+    tasks.generatePomFileForPluginPublication {
+        destination = file("$buildDir/libs/${project.name}-${project.version}.pom")
+    }
 }
 
 if (project.hasProperty("bintray.enable")) {
-  bintray {
-    user = System.env.BINTRAY_USER ?: project["bintray.user"]
-    key = System.env.BINTRAY_API_KEY ?: project["bintray.key"]
+    bintray {
+        user = System.env.BINTRAY_USER ?: project["bintray.user"]
+        key = System.env.BINTRAY_API_KEY ?: project["bintray.key"]
+        repoUrl = System.env.BINTRAY_REPO_URL ?: project["bintray.repoUrl"]
 
-    publications = ['plugin']
+        publications = ['plugin']
 
-    publish = true
+        publish = true
 
-    pkg {
-      repo = 'gradle-plugins'
-      name = 'gradle-elastic-plugin'
-      websiteUrl = "https://github.com/gesellix/$repoName"
-      issueTrackerUrl = "https://github.com/gesellix/$repoName/issues"
-      vcsUrl = "https://github.com/gesellix/${repoName}.git"
-      licenses = ['Apache-2.0']
-      labels = ['gradle', 'plugin', 'elastic', 'ElasticSearch', repoName]
-      version {
-        name = project.version
-      }
+        pkg {
+            repo = 'gradle-plugins'
+            name = 'gradle-elastic-plugin'
+            websiteUrl = "$repoUrl"
+            issueTrackerUrl = "$repoUrl/issues"
+            vcsUrl = "${repoUrl}.git"
+            licenses = ['Apache-2.0']
+            labels = ['gradle', 'plugin', 'elastic', 'ElasticSearch']
+            version {
+                name = project.version
+            }
+        }
     }
-  }
 
-  bintrayUpload.dependsOn build
+    bintrayUpload.dependsOn build
 }
