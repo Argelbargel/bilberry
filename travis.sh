@@ -27,13 +27,10 @@ if [ "$TRAVIS_TAG" != "" ]; then
     echo "Changes for release..."
     git status -s
 
-    if [ -z `git status -s` ]; then
-        echo "No changes to the output on this push; exiting."
-        exit 0
+    if [ -n "$(git status -s)" ]; then
+        git add .
+        git commit -m "release : $TRAVIS_TAG"
+        git push ${TARGET_REPO} ${TARGET_BRANCH}
     fi
-
-    git add .
-    git commit -m "release : $TRAVIS_TAG"
-    git push ${TARGET_REPO} ${TARGET_BRANCH}
 fi
 
