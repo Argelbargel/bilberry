@@ -9,6 +9,10 @@ Plugin setup with gradle >= 2.1:
 
 ```gradle
 
+    repositories {
+        maven { url "https://raw.githubusercontent.com/Argelbargel/bilberry/mvn-repo/" }
+    }
+
     plugins {
         id "argelbargel.gradle.plugins.elastic-plugin" version "0.0.13"
     }
@@ -21,7 +25,7 @@ Plugin setup with gradle < 2.1:
     buildscript {
         repositories {
             jcenter()
-            maven { url "http://dl.bintray.com/amirk/maven" }
+            maven { url "https://raw.githubusercontent.com/Argelbargel/bilberry/mvn-repo/" }
         }
         dependencies {
             classpath("argelbargel.gradle.plugins:gradle-elastic-plugin:0.0.13")
