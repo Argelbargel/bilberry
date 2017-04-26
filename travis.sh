@@ -2,7 +2,6 @@
 
 echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
 
-./gradlew assemble -Prelease=${TRAVIS_TAG}
 ./gradlew check -Prelease=${TRAVIS_TAG}
 
 #if [ "$TRAVIS_TAG" != "" ]; then
