@@ -10,7 +10,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
     ./gradlew publish -Prelease=${TRAVIS_TAG}
 
     REPO=`git config remote.origin.url`
-    ORIGIN=${REPO/https:\/\/github.com/git@github.com}
+    ORIGIN=${REPO/https:\/\/github.com\//git@github.com:}
     TARGET_BRANCH="mvn-repo"
 
     git clone ${REPO} build/deploy --no-checkout
