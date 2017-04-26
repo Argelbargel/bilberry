@@ -30,7 +30,7 @@ if [ "$TRAVIS_TAG" != "" ]; then
     if [ -n "$(git status -s)" ]; then
         git add .
         git commit -m "release: $TRAVIS_TAG"
-        git push ${TARGET_REPO} ${TARGET_BRANCH}
+        git push ${TARGET_REPO}
     fi
 fi
 
