@@ -39,7 +39,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
         ENCRYPTED_IV_VAR="encrypted_${DEPLOY_KEY_ID}_iv"
         ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
         ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
-        cat ../../deploy_key.inc
+        cat ../../deploy_key.enc
         echo "openssl aes-256-cbc -K ${ENCRYPTED_KEY} -iv ${ENCRYPTED_IV} -in ../../deploy_key.enc -out deploy_key -d"
 exit 0
         echo "Adding decrypted key..."
