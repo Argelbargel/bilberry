@@ -24,7 +24,7 @@ echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
     git config user.email "$GITHUB_USER_NAME@users.noreply.github.com"
     git config push.default simple
 
-    git checkout ${TARGET_BRANCH} || (git checkout --orphan ${TARGET_BRANCH} && git rm -r -f --cached .)
+    git checkout ${TARGET_BRANCH} || (git checkout --orphan ${TARGET_BRANCH} && git rm -r -f .)
 
     echo "Adding release to mvn-repo..."
     cp -rv ../repo/* .
