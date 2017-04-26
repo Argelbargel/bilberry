@@ -6,7 +6,7 @@ jdk:
 script: ./travis.sh
 env:
   global:
-    DEPLOY_KEY_ID="331b6160007f"
+    - DEPLOY_KEY_ID="331b6160007f"
 
 cache:
   directories:
