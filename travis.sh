@@ -21,6 +21,7 @@ if [ "$TRAVIS_TAG" != "" ]; then
     git config user.name "Travis CI"
     git config user.email "$COMMIT_AUTHOR_EMAIL"
 
+    echo "Adding release to mvn-repo..."
     cp -rv ../repo/* .
 
     if [ -z `git diff --exit-code` ]; then
