@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 echo "Building branch $TRAVIS_BRANCH (pull-request: $TRAVIS_PULL_REQUEST)..."
-echo $(pwd)
 
 ./gradlew assemble -Prelease=${TRAVIS_TAG}
 ./gradlew check -Prelease=${TRAVIS_TAG}
