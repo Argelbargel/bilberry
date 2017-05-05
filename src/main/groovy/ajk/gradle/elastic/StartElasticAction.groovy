@@ -100,8 +100,8 @@ class StartElasticAction {
         def environment = [
                 "JAVA_HOME=${System.properties['java.home']}",
                 "ES_HOME=$elastic.home",
-                "ES_MAX_MEM=${minMemory}",
-                "ES_MIN_MEM=${maxMemory}"
+                "ES_MAX_MEM=${maxMemory}",
+                "ES_MIN_MEM=${minMemory}"
         ]
 
         def command = [
