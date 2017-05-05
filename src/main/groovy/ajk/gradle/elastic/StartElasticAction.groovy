@@ -46,6 +46,14 @@ class StartElasticAction {
     @Optional
     String packageUrl = null
 
+    @Input
+    @Optional
+    String minMemory = "128m"
+
+    @Input
+    @Optional
+    String maxMemory = "512m"
+
     private Project project
 
     private AntBuilder ant
@@ -92,8 +100,8 @@ class StartElasticAction {
         def environment = [
                 "JAVA_HOME=${System.properties['java.home']}",
                 "ES_HOME=$elastic.home",
-                "ES_MAX_MEM=512m",
-                "ES_MIN_MEM=128m"
+                "ES_MAX_MEM=${minMemory}",
+                "ES_MIN_MEM=${maxMemory}"
         ]
 
         def command = [
