@@ -53,10 +53,9 @@ class ElasticActions {
     }
 
     void install(String packageUrl, List<String> withPlugins) {
-        println "${CYAN}* elastic:$NORMAL installing elastic version $version from $packageUrl"
-
         File elasticFile = new File("$toolsDir/elastic-${version}.zip")
         if (!elasticFile.exists()) {
+            println "${CYAN}* elastic:$NORMAL downloading elastic version $version from $packageUrl"
             DownloadAction elasticDownload = new DownloadAction(project)
             elasticDownload.dest(elasticFile)
             elasticDownload.src(packageUrl)
@@ -64,6 +63,7 @@ class ElasticActions {
             elasticDownload.execute()
         }
 
+        println "${CYAN}* elastic:$NORMAL installing elastic from $elasticFile"
         ant.delete(dir: homeDir, quiet: true)
         homeDir.mkdirs()
 

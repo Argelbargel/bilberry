@@ -22,10 +22,6 @@ class StopElasticAction {
 
     @Input
     @Optional
-    File toolsDir
-
-    @Input
-    @Optional
     String elasticVersion
 
     private AntBuilder ant
@@ -37,15 +33,14 @@ class StopElasticAction {
     }
 
     void execute() {
-        File toolsDir = toolsDir ?: new File("$project.rootDir/.gradle/tools")
         File homeDir = homeDir ?: new File("${project.buildDir}/elastic")
-        ElasticActions elastic = new ElasticActions(project, homeDir, toolsDir, elasticVersion ?: DEFAULT_ELASTIC_VERSION)
+        String elasticVersion = elasticVersion ?: DEFAULT_ELASTIC_VERSION
 
         println "${CYAN}* elastic:$NORMAL stopping ElasticSearch"
 
         try {
-            def pidFile = new File(elastic.homeDir, 'elastic.pid')
-            if (elastic.version.startsWith("2")) {
+            def pidFile = new File(homeDir, 'elastic.pid')
+            if (elasticVersion.startsWith("2")) {
                 if (!pidFile.exists()) {
                     println "${RED}* elastic:$NORMAL ${pidFile} not found"
                     println "${RED}* elastic:$NORMAL could not stop ElasticSearch, please check manually!"
