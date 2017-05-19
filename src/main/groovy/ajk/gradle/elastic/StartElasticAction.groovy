@@ -24,6 +24,10 @@ class StartElasticAction {
 
     @Input
     @Optional
+    File homeDir
+
+    @Input
+    @Optional
     File toolsDir
 
     @Input
@@ -64,10 +68,11 @@ class StartElasticAction {
     }
 
     void execute() {
-        File toolsDir = toolsDir ?: new File("$project.rootDir/gradle/tools")
-        ElasticActions elastic = new ElasticActions(project, toolsDir, elasticVersion ?: DEFAULT_ELASTIC_VERSION)
+        File toolsDir = toolsDir ?: new File("${project.rootDir}/.gradle/tools")
+        File homeDir = homeDir ?: new File("${project.buildDir}/elastic")
+        ElasticActions elastic = new ElasticActions(project, homeDir, toolsDir, elasticVersion ?: DEFAULT_ELASTIC_VERSION)
 
-        def pidFile = new File(elastic.home, 'elastic.pid')
+        def pidFile = new File(elastic.homeDir, 'elastic.pid')
         if (pidFile.exists()) {
             println "${YELLOW}* elastic:$NORMAL ElasticSearch seems to be running at pid ${pidFile.text}"
             println "${YELLOW}* elastic:$NORMAL please check $pidFile"
@@ -83,7 +88,7 @@ class StartElasticAction {
         transportPort = transportPort ?: 9300
         dataDir = dataDir ?: new File("$project.buildDir/elastic")
         logsDir = logsDir ?: new File("$dataDir/logs")
-        println "${CYAN}* elastic:$NORMAL starting ElasticSearch at $elastic.home using http port $httpPort and tcp transport port $transportPort"
+        println "${CYAN}* elastic:$NORMAL starting ElasticSearch at $elastic.homeDir using http port $httpPort and tcp transport port $transportPort"
         println "${CYAN}* elastic:$NORMAL ElasticSearch data directory: $dataDir"
         println "${CYAN}* elastic:$NORMAL ElasticSearch logs directory: $logsDir"
 
@@ -96,10 +101,10 @@ class StartElasticAction {
         dataDir.mkdirs()
         logsDir.mkdirs()
 
-        File esScript = new File("${elastic.home}/bin/elasticsearch${isFamily(FAMILY_WINDOWS) ? '.bat' : ''}")
+        File esScript = new File("${elastic.homeDir}/bin/elasticsearch${isFamily(FAMILY_WINDOWS) ? '.bat' : ''}")
         def environment = [
                 "JAVA_HOME=${System.properties['java.home']}",
-                "ES_HOME=$elastic.home",
+                "ES_HOME=$elastic.homeDir",
                 "ES_MAX_MEM=${maxMemory}",
                 "ES_MIN_MEM=${minMemory}"
         ]
@@ -120,7 +125,7 @@ class StartElasticAction {
             ]
         }
 
-        command.execute(environment, elastic.home)
+        command.execute(environment, elastic.homeDir)
 
         println "${CYAN}* elastic:$NORMAL waiting for ElasticSearch to start"
         ant.waitfor(maxwait: 2, maxwaitunit: "minute", timeoutproperty: "elasticTimeout") {

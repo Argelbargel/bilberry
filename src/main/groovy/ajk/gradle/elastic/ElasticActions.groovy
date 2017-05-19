@@ -13,33 +13,26 @@ class ElasticActions {
     File toolsDir
     Project project
     AntBuilder ant
-    File home
+    File homeDir
 
-    ElasticActions(Project project, File toolsDir, String version) {
+    ElasticActions(Project project, File homeDir, File toolsDir, String version) {
         this.project = project
+        this.homeDir = homeDir
         this.toolsDir = toolsDir
         this.version = version
         this.ant = project.ant
-        home = new File("$toolsDir/elastic")
     }
 
     boolean isInstalled() {
-        if (!new File("$toolsDir/elastic-${version}.zip").exists()) {
-            return false
-        }
-
-        if (!new File("$home/bin/elasticsearch").exists()) {
+        if (!new File("$homeDir/bin/elasticsearch").exists()) {
             return false
         }
 
         def currentVersion = getCurrentVersion()
         if (!(currentVersion?.contains(version))) {
             // cleanup when the installed version doesn't match the expected version
-            println "deleting $home ..."
-            ant.delete(dir: home)
-            println "deleting $toolsDir/elastic-${version}.zip ..."
-            ant.delete(file: "$toolsDir/elastic-${version}.zip")
-
+            println "deleting $homeDir ..."
+            ant.delete(dir: homeDir, quiet: true)
             return false
         }
 
@@ -50,7 +43,7 @@ class ElasticActions {
         def versionInfo = new StringBuffer()
 
         print "${CYAN}* elastic:$NORMAL checking existing version..."
-        def versionFile = new File("$home/version.txt")
+        def versionFile = new File("$homeDir/version.txt")
         if (versionFile?.isFile() && versionFile?.canRead()) {
             versionInfo = versionFile.readLines()
         }
@@ -62,34 +55,35 @@ class ElasticActions {
     void install(String packageUrl, List<String> withPlugins) {
         println "${CYAN}* elastic:$NORMAL installing elastic version $version from $packageUrl"
 
-        File elasticFile = new File("${project.projectDir}/.gradle/elastic-${version}.zip")
+        File elasticFile = new File("$toolsDir/elastic-${version}.zip")
+        if (!elasticFile.exists()) {
+            DownloadAction elasticDownload = new DownloadAction(project)
+            elasticDownload.dest(elasticFile)
+            elasticDownload.src(packageUrl)
+            elasticDownload.onlyIfNewer(true)
+            elasticDownload.execute()
+        }
 
-        DownloadAction elasticDownload = new DownloadAction(project)
-        elasticDownload.dest(elasticFile)
-        elasticDownload.src(packageUrl)
-        elasticDownload.onlyIfNewer(true)
-        elasticDownload.execute()
-
-        ant.delete(dir: home, quiet: true)
-        home.mkdirs()
+        ant.delete(dir: homeDir, quiet: true)
+        homeDir.mkdirs()
 
         if (isFamily(FAMILY_WINDOWS)) {
-            ant.unzip(src: elasticFile, dest: "$home") {
+            ant.unzip(src: elasticFile, dest: "$homeDir") {
                 cutdirsmapper(dirs: 1)
             }
         } else {
-            ant.untar(src: elasticFile, dest: "$home", compression: "gzip") {
+            ant.untar(src: elasticFile, dest: "$homeDir", compression: "gzip") {
                 cutdirsmapper(dirs: 1)
             }
-            ant.chmod(file: new File("$home/bin/elasticsearch"), perm: "+x")
-            ant.chmod(file: new File("$home/bin/plugin"), perm: "+x")
+            ant.chmod(file: new File("$homeDir/bin/elasticsearch"), perm: "+x")
+            ant.chmod(file: new File("$homeDir/bin/plugin"), perm: "+x")
         }
 
-        new File("$home/version.txt").write(version)
+        new File("$homeDir/version.txt").write(version)
 
         if (withPlugins.contains("head plugin")) {
             println "* elastic: installing the head plugin"
-            String plugin = "$home/bin/plugin"
+            String plugin = "$homeDir/bin/plugin"
             if (isFamily(FAMILY_WINDOWS)) {
                 plugin += ".bat"
             }
@@ -101,9 +95,9 @@ class ElasticActions {
             ].execute([
                     "JAVA_HOME=${System.properties['java.home']}",
                     "JAVA_OPTS=${System.getenv("JAVA_OPTS")}",
-                    "ES_HOME=$home"
+                    "ES_HOME=$homeDir"
 
-            ], home)
+            ], homeDir)
         }
     }
 

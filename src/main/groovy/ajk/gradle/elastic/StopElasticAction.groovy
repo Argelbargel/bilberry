@@ -18,6 +18,10 @@ class StopElasticAction {
 
     @Input
     @Optional
+    File homeDir
+
+    @Input
+    @Optional
     File toolsDir
 
     @Input
@@ -33,13 +37,14 @@ class StopElasticAction {
     }
 
     void execute() {
-        File toolsDir = toolsDir ?: new File("$project.rootDir/gradle/tools")
-        ElasticActions elastic = new ElasticActions(project, toolsDir, elasticVersion ?: DEFAULT_ELASTIC_VERSION)
+        File toolsDir = toolsDir ?: new File("$project.rootDir/.gradle/tools")
+        File homeDir = homeDir ?: new File("${project.buildDir}/elastic")
+        ElasticActions elastic = new ElasticActions(project, homeDir, toolsDir, elasticVersion ?: DEFAULT_ELASTIC_VERSION)
 
         println "${CYAN}* elastic:$NORMAL stopping ElasticSearch"
 
         try {
-            def pidFile = new File(elastic.home, 'elastic.pid')
+            def pidFile = new File(elastic.homeDir, 'elastic.pid')
             if (elastic.version.startsWith("2")) {
                 if (!pidFile.exists()) {
                     println "${RED}* elastic:$NORMAL ${pidFile} not found"
