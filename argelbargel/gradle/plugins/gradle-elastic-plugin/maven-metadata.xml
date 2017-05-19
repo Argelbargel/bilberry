@@ -3,10 +3,10 @@
   <groupId>argelbargel.gradle.plugins</groupId>
   <artifactId>gradle-elastic-plugin</artifactId>
   <versioning>
-    <release>0.0.16</release>
+    <release>0.0.17</release>
     <versions>
-      <version>0.0.16</version>
+      <version>0.0.17</version>
     </versions>
-    <lastUpdated>20170519135910</lastUpdated>
+    <lastUpdated>20170519143801</lastUpdated>
   </versioning>
 </metadata>
