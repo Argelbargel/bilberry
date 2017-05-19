@@ -62,7 +62,7 @@ class ElasticActions {
     void install(String packageUrl, List<String> withPlugins) {
         println "${CYAN}* elastic:$NORMAL installing elastic version $version from $packageUrl"
 
-        File elasticFile = new File("$toolsDir/elastic-${version}.zip")
+        File elasticFile = new File("${project.projectDir}/.gradle/elastic-${version}.zip")
 
         DownloadAction elasticDownload = new DownloadAction(project)
         elasticDownload.dest(elasticFile)
