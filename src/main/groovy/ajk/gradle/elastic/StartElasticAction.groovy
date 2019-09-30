@@ -16,6 +16,10 @@ class StartElasticAction {
 
     @Input
     @Optional
+    String networkHost
+
+    @Input
+    @Optional
     int httpPort
 
     @Input
@@ -84,6 +88,7 @@ class StartElasticAction {
             elastic.install(url, withPlugins)
         }
 
+        networkHost = networkHost ?: '127.0.0.1'
         httpPort = httpPort ?: 9200
         transportPort = transportPort ?: 9300
         dataDir = dataDir ?: new File("$project.buildDir/elastic")
@@ -111,6 +116,7 @@ class StartElasticAction {
 
         def command = [
                 esScript.absolutePath,
+                "-Des.network.host=$networkHost",
                 "-Des.http.port=$httpPort",
                 "-Des.transport.tcp.port=$transportPort",
                 "-Des.path.data=$dataDir",
