@@ -136,8 +136,8 @@ class StartElasticAction {
         println "${CYAN}* elastic:$NORMAL waiting for ElasticSearch to start"
         ant.waitfor(maxwait: 2, maxwaitunit: "minute", timeoutproperty: "elasticTimeout") {
             and {
-                socket(server: "localhost", port: transportPort)
-                ant.http(url: "http://localhost:$httpPort")
+                socket(server: networkHost, port: transportPort)
+                ant.http(url: "http://$networkHost:$httpPort")
             }
         }
 
