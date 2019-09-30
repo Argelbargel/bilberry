@@ -93,7 +93,7 @@ class StartElasticAction {
         transportPort = transportPort ?: 9300
         dataDir = dataDir ?: new File("$project.buildDir/elastic")
         logsDir = logsDir ?: new File("$dataDir/logs")
-        println "${CYAN}* elastic:$NORMAL starting ElasticSearch at $elastic.homeDir using http port $httpPort and tcp transport port $transportPort"
+        println "${CYAN}* elastic:$NORMAL starting ElasticSearch at $elastic.homeDir using http port $httpPort and tcp transport port $transportPort at $networkHost"
         println "${CYAN}* elastic:$NORMAL ElasticSearch data directory: $dataDir"
         println "${CYAN}* elastic:$NORMAL ElasticSearch logs directory: $logsDir"
 
