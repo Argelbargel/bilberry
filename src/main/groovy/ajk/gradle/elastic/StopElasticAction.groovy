@@ -11,6 +11,9 @@ import static org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS
 import static org.apache.tools.ant.taskdefs.condition.Os.isFamily
 
 class StopElasticAction {
+    @Input
+    @Optional
+    private String networkHost
 
     @Input
     @Optional
@@ -36,7 +39,9 @@ class StopElasticAction {
         File homeDir = homeDir ?: new File("${project.buildDir}/elastic")
         String elasticVersion = elasticVersion ?: DEFAULT_ELASTIC_VERSION
 
-        println "${CYAN}* elastic:$NORMAL stopping ElasticSearch"
+        networkHost = networkHost ?: 'localhost'
+        httpPort = httpPort ?: 9200
+        println "${CYAN}* elastic:$NORMAL stopping ElasticSearch at ${networkHost}:${httpPort}"
 
         try {
             def pidFile = new File(homeDir, 'elastic.pid')
@@ -54,13 +59,13 @@ class StopElasticAction {
                     "kill $elasticPid".execute()
                 }
             } else {
-                newInstance().execute(Post("http://localhost:${httpPort ?: 9200}/_shutdown"))
+                newInstance().execute(Post("http://${networkHost}:${httpPort}/_shutdown"))
             }
 
             println "${CYAN}* elastic:$NORMAL waiting for ElasticSearch to shutdown"
             ant.waitfor(maxwait: 2, maxwaitunit: "minute", timeoutproperty: "elasticTimeout") {
                 not {
-                    ant.http(url: "http://localhost:$httpPort")
+                    ant.http(url: "http://${networkHost}:$httpPort")
                 }
             }
 
@@ -74,7 +79,7 @@ class StopElasticAction {
                 println "${CYAN}* elastic:$NORMAL ElasticSearch is now down"
             }
         } catch (ConnectException e) {
-            println "${CYAN}* elastic:$YELLOW warning - unable to stop elastic on http port ${httpPort ?: 9200}, ${e.message}$NORMAL"
+            println "${CYAN}* elastic:$YELLOW warning - unable to stop elastic on  ${networkHost}:${httpPort}, ${e.message}$NORMAL"
         }
     }
 }

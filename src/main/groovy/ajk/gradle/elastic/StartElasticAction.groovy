@@ -88,7 +88,7 @@ class StartElasticAction {
             elastic.install(url, withPlugins)
         }
 
-        networkHost = networkHost ?: '127.0.0.1'
+        networkHost = networkHost ?: 'localhost'
         httpPort = httpPort ?: 9200
         transportPort = transportPort ?: 9300
         dataDir = dataDir ?: new File("$project.buildDir/elastic")
